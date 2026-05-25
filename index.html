@@ -112,6 +112,29 @@ body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--ink);font-si
         </div>
       </div>
       <div class="field">
+        <label>Origem cultural / étnica</label>
+        <div class="radio-row">
+          <button class="radio-btn" onclick="setSingle('origem','Brasileira',this)">Brasileira</button>
+          <button class="radio-btn" onclick="setSingle('origem','Asiática',this)">Asiática</button>
+          <button class="radio-btn" onclick="setSingle('origem','Árabe/Médio-Oriental',this)">Árabe / Médio-Oriental</button>
+          <button class="radio-btn" onclick="setSingle('origem','Africana/Afro-brasileira',this)">Africana / Afro-brasileira</button>
+          <button class="radio-btn" onclick="setSingle('origem','Latino-americana',this)">Latino-americana</button>
+          <button class="radio-btn" onclick="setSingle('origem','Europeia',this)">Europeia</button>
+          <button class="radio-btn" onclick="setSingle('origem','Judaica',this)">Judaica</button>
+          <button class="radio-btn" onclick="setSingle('origem','Outra',this)">Outra</button>
+          <button class="radio-btn" onclick="setSingle('origem','Prefiro não informar',this)">Prefiro não informar</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>A religião ou espiritualidade tem papel importante na sua vida?</label>
+        <div class="radio-row">
+          <button class="radio-btn" onclick="setSingle('religiao','Sim, muito importante',this)">Sim, muito importante</button>
+          <button class="radio-btn" onclick="setSingle('religiao','Um pouco',this)">Um pouco</button>
+          <button class="radio-btn" onclick="setSingle('religiao','Não',this)">Não</button>
+          <button class="radio-btn" onclick="setSingle('religiao','Prefiro não informar',this)">Prefiro não informar</button>
+        </div>
+      </div>
+      <div class="field">
         <label>Unidade de atendimento *</label>
         <div class="radio-row">
           <button class="radio-btn" onclick="setSingle('unidade','Mogi das Cruzes',this)">Mogi das Cruzes</button>
@@ -213,6 +236,51 @@ body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--ink);font-si
     <div class="block-body"><div id="q-open"></div></div>
   </div>
 
+  <!-- BLOCO 12: INTENSIDADE DAS FASES (Bipolar I vs II vs Misto) -->
+  <div class="block">
+    <div class="block-head"><span class="block-num">12</span><span class="block-title">Intensidade das suas fases</span><span class="block-sub">10 perguntas</span></div>
+    <div class="block-body">
+      <div class="legend"><strong>0</strong> = nunca · <strong>1</strong> = raramente · <strong>2</strong> = às vezes · <strong>3</strong> = frequente · <strong>4</strong> = quase sempre / sempre</div>
+      <div id="q-intens"></div>
+    </div>
+  </div>
+
+  <!-- BLOCO 13: CULTURAL — só aparece se origem asiática -->
+  <div class="block" id="bloco-cultural" style="display:none">
+    <div class="block-head"><span class="block-num">13</span><span class="block-title">Algumas perguntas sobre seu dia a dia</span><span class="block-sub">8 perguntas</span></div>
+    <div class="block-body">
+      <div class="legend"><strong>0</strong> = nunca · <strong>1</strong> = raramente · <strong>2</strong> = às vezes · <strong>3</strong> = frequente · <strong>4</strong> = quase sempre / sempre</div>
+      <div id="q-cultural"></div>
+    </div>
+  </div>
+
+  <!-- BLOCO 14: ÁRABE — só aparece se origem árabe -->
+  <div class="block" id="bloco-arabe" style="display:none">
+    <div class="block-head"><span class="block-num">14</span><span class="block-title">Você e sua família</span><span class="block-sub">7 perguntas</span></div>
+    <div class="block-body">
+      <div class="legend"><strong>0</strong> = nunca · <strong>1</strong> = raramente · <strong>2</strong> = às vezes · <strong>3</strong> = frequente · <strong>4</strong> = quase sempre / sempre</div>
+      <div id="q-arabe"></div>
+    </div>
+  </div>
+
+  <!-- BLOCO 15: AFRO-BRASILEIRA — só aparece se origem africana/afro -->
+  <div class="block" id="bloco-afro" style="display:none">
+    <div class="block-head"><span class="block-num">15</span><span class="block-title">Sua experiência e contexto</span><span class="block-sub">7 perguntas</span></div>
+    <div class="block-body">
+      <div class="legend"><strong>0</strong> = nunca · <strong>1</strong> = raramente · <strong>2</strong> = às vezes · <strong>3</strong> = frequente · <strong>4</strong> = quase sempre / sempre</div>
+      <div id="q-afro"></div>
+    </div>
+  </div>
+
+  <!-- BLOCO 16: RELIGIÃO — só aparece se "Sim, muito importante" -->
+  <div class="block" id="bloco-religiao" style="display:none">
+    <div class="block-head"><span class="block-num">16</span><span class="block-title">Fé e espiritualidade no seu dia a dia</span><span class="block-sub">6 perguntas</span></div>
+    <div class="block-body">
+      <div class="legend"><strong>0</strong> = nunca · <strong>1</strong> = raramente · <strong>2</strong> = às vezes · <strong>3</strong> = frequente · <strong>4</strong> = quase sempre / sempre</div>
+      <div id="q-religiao"></div>
+    </div>
+  </div>
+
   <div class="submit-area">
     <button class="btn-submit" onclick="submitQuiz()">Enviar para a Dra. Camila</button>
   </div>
@@ -227,12 +295,20 @@ body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--ink);font-si
 <script>
 const APPS_URL = 'https://script.google.com/macros/s/AKfycbz6vGY8basVjqYA9YOH9BGLPxp86FCAaVZdFT3OybH05oNrOsTdxwHdwaTe9EKbGHsW5w/exec';
 
-let pid = {nome:'',nasc:'',sexo:'',genero:'',unidade:''};
+let pid = {nome:'',nasc:'',sexo:'',genero:'',origem:'',religiao:'',unidade:''};
 
 function setSingle(f,v,btn){
   pid[f]=v;
   btn.parentElement.querySelectorAll('.radio-btn').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
+  if(f==='origem'){
+    document.getElementById('bloco-cultural').style.display = v==='Asiática'?'block':'none';
+    document.getElementById('bloco-arabe').style.display    = v==='Árabe/Médio-Oriental'?'block':'none';
+    document.getElementById('bloco-afro').style.display     = v==='Africana/Afro-brasileira'?'block':'none';
+  }
+  if(f==='religiao'){
+    document.getElementById('bloco-religiao').style.display = v==='Sim, muito importante'?'block':'none';
+  }
 }
 function showId(){
   document.getElementById('cover').style.display='none';
@@ -386,19 +462,92 @@ const qOpen = [
   {q:"O que gostaria que a Dra. Camila soubesse sobre você que ainda não foi dito?", hint:"Qualquer coisa que pareça importante."},
 ];
 
-// ── STATE ─────────────────────────────────────────────────────────────────
+// 12 INTENSIDADE DAS FASES — Bipolar I vs II vs Misto (YMRS / HCL-32 / DSM-5)
+const qIntens = [
+  // Mania completa (Bipolar I)
+  "Já tive fases em que me sentia tão especial, poderoso(a) ou capaz que fui além dos meus limites reais.",
+  "Nessas fases, já gastei muito dinheiro, tomei decisões graves ou me envolvi em situações que depois me trouxeram problemas sérios.",
+  "Já fui levado(a) a uma consulta médica ou internação por causa do meu comportamento nessas fases.",
+  "Nas minhas fases de alta energia, as pessoas ao redor ficavam preocupadas ou tentavam me conter.",
+  // Hipomania (Bipolar II) — mais contida
+  "Tenho fases de mais energia e produtividade que duram alguns dias — mas sem consequências graves.",
+  "Nessas fases, me sinto melhor do que o normal — não exatamente eufórico(a), mas claramente diferente do meu basal.",
+  "Essas fases de alta são observáveis — as pessoas notam que estou diferente, mais animado(a) ou agitado(a).",
+  // Hipomania irritável/disfórica (Bipolar II raivoso)
+  "Em algumas fases de 'alta energia', em vez de euforia sinto mais irritação, impaciência ou raiva — como se tudo me incomodasse.",
+  "Nessas fases irritáveis, tenho energia alta mas não me sinto bem — é uma agitação desconfortável, não uma sensação boa.",
+  // Episódio misto
+  "Já tive períodos em que me sentia ao mesmo tempo muito agitado(a) e muito triste — energia e desesperança juntas.",
+];
+
+// 13 CULTURAL — apresentação somática / supressão emocional asiática
+const qCultural = [
+  "Quando estou sofrendo emocionalmente, costumo sentir isso primeiro no corpo — dores, cansaço, aperto no peito, dor de cabeça.",
+  "Na minha família ou cultura, falar sobre sentimentos é algo que não se faz com facilidade.",
+  "Há expectativas na minha família sobre como devo me comportar — e eu me esforço para não desapontar.",
+  "Quando estou mal, prefiro resolver sozinho(a) a pedir ajuda — pedir ajuda pode parecer fraqueza.",
+  "Já senti raiva, tristeza ou angústia mas mantive a expressão tranquila por fora porque era o que se esperava de mim.",
+  "Me preocupo muito com o que minha família ou comunidade pensaria se soubesse do que estou passando.",
+  "Tenho ou tive sintomas físicos recorrentes (dores, fadiga, problemas digestivos) que os médicos não encontraram causa clara.",
+  "Às vezes não sei nomear o que estou sentindo — só sei que algo não está bem.",
+];
+
+// 14 ÁRABE / MÉDIO-ORIENTAL — honra, vergonha, somatização, invisibilidade da mulher
+const qArabe = [
+  "Quando estou passando por algo difícil, prefiro manter isso dentro de casa — não é algo que se compartilha fora.",
+  "Sinto que há uma expectativa clara sobre como devo me comportar para não envergonhar minha família.",
+  "Quando estou sofrendo, sinto isso no corpo — dores, aperto, cansaço — mais do que consigo colocar em palavras.",
+  "Já deixei de buscar ajuda para algo que estava sentindo porque não queria que a família ou comunidade soubesse.",
+  "Há coisas que sinto que simplesmente não posso expressar — porque não seria aceito(a) ou compreendido(a).",
+  "Me preocupo com o que seria dito sobre mim ou minha família se alguém soubesse do que estou vivendo.",
+  "Às vezes me sinto sozinho(a) com o que sinto — sem espaço para falar sobre isso com as pessoas próximas.",
+];
+
+// 15 AFRO-BRASILEIRA — somatização, espiritualidade como interpretação de sintomas, sobrecarga
+const qAfro = [
+  "Já tive sintomas (visões, vozes, sensações) que alguém próximo interpretou como algo espiritual.",
+  "Quando estou passando mal, às vezes fico em dúvida se é algo emocional, físico ou espiritual.",
+  "Já fui orientado(a) a buscar solução espiritual para algo que estava sentindo, em vez de ajuda médica.",
+  "Carrego muitas responsabilidades — pela família, pelos outros — e isso às vezes me pesa muito.",
+  "Tenho sintomas físicos recorrentes (dores, cansaço, mal-estar) que os médicos não encontraram causa clara.",
+  "Sinto que meu sofrimento muitas vezes não é levado a sério — por médicos ou por pessoas próximas.",
+  "Já deixei de buscar ajuda porque não sabia se o que sentia 'contava' como algo que merecia atenção.",
+];
+
+// 16 RELIGIÃO — papel da fé no sofrimento e no tratamento (universal, não discriminatório)
+const qReligiao = [
+  "Quando estou sofrendo, a religião ou espiritualidade é minha principal fonte de apoio.",
+  "Já interpretei sintomas que estava sentindo como algo espiritual — uma prova, uma batalha ou uma mensagem.",
+  "Já interrompi ou evitei um tratamento médico porque alguém da minha comunidade religiosa orientou diferente.",
+  "Sinto que buscar ajuda psiquiátrica pode ser visto como falta de fé na minha comunidade.",
+  "Já me senti culpado(a) pelo que estou sentindo — como se fosse uma falha espiritual ou moral.",
+  "A religião já me ajudou a atravessar momentos difíceis — é uma fonte real de força para mim.",
+];
 const KEYS = ['energia','humor','depre','sono','pens','rel','cope','ident','habit'];
 const QLENS = [10,10,10,7,8,10,10,9,8];
 let state = {};
 KEYS.forEach((k,i) => { state[k] = Array(QLENS[i]).fill(null); });
+state.intens   = Array(10).fill(null);
+state.cultural = Array(8).fill(null);
+state.arabe    = Array(7).fill(null);
+state.afro     = Array(7).fill(null);
+state.religiao = Array(6).fill(null);
 state.hist = {};
 state.open = Array(4).fill("");
 
-const idMap = {energia:'q-energia',humor:'q-humor',depre:'q-depre',sono:'q-sono',pens:'q-pens',rel:'q-rel',cope:'q-cope',ident:'q-ident',habit:'q-habit'};
-const qMap  = {energia:qEnergia,humor:qHumor,depre:qDepre,sono:qSono,pens:qPens,rel:qRel,cope:qCope,ident:qIdent,habit:qHabit};
+const idMap = {
+  energia:'q-energia',humor:'q-humor',depre:'q-depre',sono:'q-sono',
+  pens:'q-pens',rel:'q-rel',cope:'q-cope',ident:'q-ident',habit:'q-habit',
+  intens:'q-intens',cultural:'q-cultural',arabe:'q-arabe',afro:'q-afro',religiao:'q-religiao'
+};
+const qMap = {
+  energia:qEnergia,humor:qHumor,depre:qDepre,sono:qSono,
+  pens:qPens,rel:qRel,cope:qCope,ident:qIdent,habit:qHabit,
+  intens:qIntens,cultural:qCultural,arabe:qArabe,afro:qAfro,religiao:qReligiao
+};
 
 function renderAll(){
-  KEYS.forEach(k => renderScale(idMap[k], qMap[k], k, 5));
+  [...KEYS,'intens','cultural','arabe','afro','religiao'].forEach(k => renderScale(idMap[k], qMap[k], k, 5));
   renderHist(); renderOpen(); updateProg();
 }
 
@@ -450,9 +599,17 @@ function renderOpen(){
 }
 
 function updateProg(){
-  const total = QLENS.reduce((a,b)=>a+b,0) + 4;
+  const origemExtras = {'Asiática':8,'Árabe/Médio-Oriental':7,'Africana/Afro-brasileira':7};
+  const extraOrig = origemExtras[pid.origem]||0;
+  const extraRel  = pid.religiao==='Sim, muito importante'?6:0;
+  const total = QLENS.reduce((a,b)=>a+b,0) + 10 + extraOrig + extraRel + 4;
   let ans=0;
   KEYS.forEach(k=>{ ans+=state[k].filter(v=>v!==null).length; });
+  ans+=state.intens.filter(v=>v!==null).length;
+  if(pid.origem==='Asiática')             ans+=state.cultural.filter(v=>v!==null).length;
+  if(pid.origem==='Árabe/Médio-Oriental') ans+=state.arabe.filter(v=>v!==null).length;
+  if(pid.origem==='Africana/Afro-brasileira') ans+=state.afro.filter(v=>v!==null).length;
+  if(pid.religiao==='Sim, muito importante')  ans+=state.religiao.filter(v=>v!==null).length;
   ans+=Object.keys(state.hist).length;
   document.getElementById('progBar').style.width=Math.min(100,Math.round(ans/total*100))+'%';
 }
@@ -527,12 +684,35 @@ function calcDiferencial(){
   const dependente   = (R[9]||0)*2 + (B[1]||0);
   const ocpd         = (B[0]||0) + (B[1]||0) + (B[5]||0) + (B[6]||0) + (B[7]||0);
 
+  // ── BIPOLAR I vs II vs MISTO ──────────────────────────────────────────
+  const IT = state.intens;
+  // Bipolar I — mania completa: grandiosidade grave, consequências, internação, contido por outros
+  const bip1_score = (IT[0]||0) + (IT[1]||0) + (IT[2]||0)*2 + (IT[3]||0);
+  // Bipolar II — hipomania: fases contidas, sem consequências graves, observável
+  const bip2_score = (IT[4]||0) + (IT[5]||0) + (IT[6]||0);
+  // Bipolar II irritável/disfórico
+  const bip2_irita = (IT[7]||0) + (IT[8]||0);
+  // Misto — agitação + tristeza simultâneas
+  const misto_score = (IT[9]||0);
+  // Cultural
+  const cultural_score = sum(state.cultural);
+
+  // Subtipo bipolar
+  let subtipo_bipolar = '';
+  if(bip1_score >= 8) subtipo_bipolar = 'BIPOLAR TIPO I';
+  else if(bip2_score >= 6 && bip2_irita < 4) subtipo_bipolar = 'BIPOLAR TIPO II — hipomania eufórica';
+  else if(bip2_irita >= 4) subtipo_bipolar = 'BIPOLAR TIPO II — hipomania irritável/disfórica';
+  else if(misto_score >= 2 && bip_score >= 15) subtipo_bipolar = 'BIPOLAR TIPO MISTO (episódio misto)';
+  else if(bip_score >= 15) subtipo_bipolar = 'Espectro Bipolar — subtipo a definir na anamnese';
+
   return {
     bip_score, bip_max, tpb_score, tpb_max,
     dep_score, dep_max, dep_ide, dist_score, dist_max, ciclo_flag,
     clA_score, clA_paranoia, clA_esquizoide, clA_esquizotip,
     histrionico, narcisista, antissocial, evitativo, dependente, ocpd,
     bip_sono, bip_fases, tpb_gatilho, tpb_crise_rap,
+    bip1_score, bip2_score, bip2_irita, misto_score, subtipo_bipolar,
+    cultural_score, cultural_ativo: pid.origem==='Asiática',
   };
 }
 
@@ -551,10 +731,13 @@ async function submitQuiz(){
   const sc = calcDiferencial();
 
   const payload = {
-    data:dataStr, nome:pid.nome, nasc:pid.nasc, idade, sexo:pid.sexo, genero:pid.genero, unidade:pid.unidade,
+    data:dataStr, nome:pid.nome, nasc:pid.nasc, idade,
+    sexo:pid.sexo, genero:pid.genero, origem:pid.origem, religiao:pid.religiao, unidade:pid.unidade,
     scores: sc,
     energia:state.energia, humor:state.humor, depre:state.depre, sono:state.sono,
     pens:state.pens, rel:state.rel, cope:state.cope, ident:state.ident, habit:state.habit,
+    intens:state.intens,
+    cultural:state.cultural, arabe:state.arabe, afro:state.afro, religiao_resps:state.religiao,
     hist:state.hist, open:state.open,
   };
 
