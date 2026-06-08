@@ -142,6 +142,10 @@ body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--ink);font-si
           <button class="radio-btn" onclick="setSingle('unidade','Particular',this)">Particular</button>
         </div>
       </div>
+      <div class="field">
+        <label>Seu e-mail <span style="font-weight:300;color:#999">(opcional — se quiser receber uma cópia das suas respostas)</span></label>
+        <input type="email" id="f-email" placeholder="seuemail@email.com">
+      </div>
       <button class="btn-next" onclick="showQuiz()">Continuar →</button>
     </div>
   </div>
@@ -293,9 +297,9 @@ body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--ink);font-si
 </div>
 
 <script>
-const APPS_URL = 'https://script.google.com/macros/s/AKfycbyySF_KU5VD7pN3RRQPXYhSR9YYZibEnIfMmoqIHyd9J_XBtKX5r0LWNqPhFkxUzoXe/exec';
+const APPS_URL = 'https://script.google.com/macros/s/AKfycbwABqxAIj6BCgyeYn1kVr9doDjcQSwfQuoYP2JQTlorDiQ2HqTkSIVepUDF4RB2nEA/exec';
 
-let pid = {nome:'',nasc:'',sexo:'',genero:'',origem:'',religiao:'',unidade:''};
+let pid = {nome:'',nasc:'',sexo:'',genero:'',origem:'',religiao:'',unidade:'',email:''};
 
 function setSingle(f,v,btn){
   pid[f]=v;
@@ -309,16 +313,63 @@ function setSingle(f,v,btn){
   if(f==='religiao'){
     document.getElementById('bloco-religiao').style.display = v==='Sim, muito importante'?'block':'none';
   }
+  autoSave();
+}
+
+// ── AUTO-SAVE ─────────────────────────────────────────────────────────────
+const SAVE_KEY = 'rastreio_humor_state';
+
+function autoSave(){
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({pid, state}));
+  } catch(e){}
+}
+
+function autoLoad(){
+  try {
+    const saved = localStorage.getItem(SAVE_KEY);
+    if(!saved) return false;
+    const data = JSON.parse(saved);
+    if(data.pid) Object.assign(pid, data.pid);
+    if(data.state) Object.assign(state, data.state);
+    return true;
+  } catch(e){ return false; }
+}
+
+function clearSave(){
+  try { localStorage.removeItem(SAVE_KEY); } catch(e){}
 }
 function showId(){
   document.getElementById('cover').style.display='none';
   document.getElementById('id-screen').style.display='block';
+  try {
+    const saved = localStorage.getItem(SAVE_KEY);
+    if(saved){
+      const data = JSON.parse(saved);
+      if(data.pid && data.pid.nome){
+        const continuar = confirm('Encontramos um questionário salvo de ' + data.pid.nome + '. Deseja continuar de onde parou?');
+        if(continuar){
+          Object.assign(pid, data.pid);
+          Object.assign(state, data.state);
+          document.getElementById('f-nome').value  = pid.nome  || '';
+          document.getElementById('f-nasc').value  = pid.nasc  || '';
+          document.getElementById('f-email').value = pid.email || '';
+          document.getElementById('id-screen').style.display='none';
+          document.getElementById('quiz').style.display='block';
+          renderAll();
+          return;
+        } else { clearSave(); }
+      }
+    }
+  } catch(e){}
 }
+
 function showQuiz(){
   const nome=document.getElementById('f-nome').value.trim();
   const nasc=document.getElementById('f-nasc').value;
   if(!nome||!nasc||!pid.sexo||!pid.unidade){alert('Por favor, preencha todos os campos obrigatórios (*).');return;}
   pid.nome=nome; pid.nasc=nasc;
+  pid.email=document.getElementById('f-email').value.trim();
   document.getElementById('id-screen').style.display='none';
   document.getElementById('quiz').style.display='block';
   renderAll();
@@ -567,6 +618,7 @@ function setScale(key,i,v){
   state[key][i]=v;
   renderScale(idMap[key],qMap[key],key,5);
   updateProg();
+  autoSave();
 }
 
 function renderHist(){
@@ -586,7 +638,7 @@ function renderHist(){
     div.innerHTML=inner; c.appendChild(div);
   });
 }
-function setHist(i,v){ state.hist[i]=decodeURIComponent(v); renderHist(); updateProg(); }
+function setHist(i,v){ state.hist[i]=decodeURIComponent(v); renderHist(); updateProg(); autoSave(); }
 
 function renderOpen(){
   const c=document.getElementById('q-open'); c.innerHTML='';
@@ -733,6 +785,7 @@ async function submitQuiz(){
   const payload = {
     data:dataStr, nome:pid.nome, nasc:pid.nasc, idade,
     sexo:pid.sexo, genero:pid.genero, origem:pid.origem, religiao:pid.religiao, unidade:pid.unidade,
+    email_paciente: pid.email,
     scores: sc,
     energia:state.energia, humor:state.humor, depre:state.depre, sono:state.sono,
     pens:state.pens, rel:state.rel, cope:state.cope, ident:state.ident, habit:state.habit,
@@ -744,6 +797,8 @@ async function submitQuiz(){
   try {
     await fetch(APPS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   } catch(e){console.error(e);}
+
+  clearSave();
 
   const nome1=pid.nome.split(' ')[0];
   const masc=pid.genero==='Homem cis'||pid.genero==='Homem trans';
